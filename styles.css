@@ -600,7 +600,7 @@ body::before {
   .nav-link { display: none; }
   .nav-link.nav-admin { display: inline; font-size: 12px; }
   .donate-cta { padding: 8px 14px; font-size: 12px; }
-  .donate-cta svg { width: 12px; height: 12px; }
+  .donate-cta svg { display: none; }
   .search-box { width: 100%; margin: 0; }
   .hero h1 { font-size: 38px; line-height: 1.05; }
   .hero .hero-si { font-size: 14px; }
