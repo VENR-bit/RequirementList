@@ -413,4 +413,3 @@ function ThemeTweaks({ theme, setTheme, mode, setMode, onClose }) {
 }
 
 window.RideekandaApp = App;
-window.RIDEEKANDA_STORE_KEY = STORE_KEY;
