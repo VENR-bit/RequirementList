@@ -7,20 +7,6 @@ const ICONS = window.ICONS;
 const fmtLKR = (n) => n.toLocaleString("en-LK", { maximumFractionDigits: 0 });
 const pad2 = (n) => String(n).padStart(2, "0");
 
-// Persistent admin-managed items live in localStorage under this key.
-// The admin page writes here; the public list reads from here when present.
-const STORE_KEY = "rk-items";
-function loadItems() {
-  try {
-    const s = localStorage.getItem(STORE_KEY);
-    if (s) return JSON.parse(s);
-  } catch (e) {}
-  return ITEMS;
-}
-function saveItems(list) {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch(e) {}
-}
-
 function ItemThumb({ photo, icon, priority }) {
   const tag = priority === "urgent" ? "Urgent" : priority === "need" ? "Needed" : null;
   return (
@@ -110,7 +96,7 @@ function PledgeModal({ item, onClose, onConfirm }) {
   if (!item) return null;
   const submit = (e) => {
     e.preventDefault();
-    onConfirm(item, qty);
+    onConfirm(item, qty, name);
     setPhase("success");
   };
   return (
@@ -182,7 +168,8 @@ const SORTS = [
 const PRIORITY_RANK = { urgent: 0, need: 1, routine: 2 };
 
 function App() {
-  const [items, setItems] = useState(loadItems);
+  const [items, setItems] = useState(ITEMS);
+  const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState("urgent");
   const [search, setSearch] = useState("");
   const [pledgeFor, setPledgeFor] = useState(null);
@@ -190,16 +177,11 @@ function App() {
   const [mode, setMode] = useState(localStorage.getItem("rk-mode") || "day");
   const [tweaksOpen, setTweaksOpen] = useState(false);
 
-  // re-sync from localStorage when admin updates the list in another tab/page
   useEffect(() => {
-    const onStorage = (e) => { if (e.key === STORE_KEY) setItems(loadItems()); };
-    const onFocus = () => setItems(loadItems());
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("focus", onFocus);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("focus", onFocus);
-    };
+    window.sbFetchItems().then((rows) => {
+      if (rows.length) setItems(rows);
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -249,10 +231,12 @@ function App() {
     return out;
   }, [items, search, sort]);
 
-  const onConfirmPledge = (item, addQty) => {
-    const next = items.map(it => it.id === item.id ? { ...it, pledged: Math.min(it.qty, (it.pledged || 0) + addQty) } : it);
+  const onConfirmPledge = async (item, addQty, pledgeName) => {
+    const newPledged = Math.min(item.qty, (item.pledged || 0) + addQty);
+    const next = items.map(it => it.id === item.id ? { ...it, pledged: newPledged } : it);
     setItems(next);
-    saveItems(next);
+    await window.sbUpdateItem(item.id, { pledged: newPledged });
+    await window.sbInsertPledge(item.id, pledgeName, addQty);
   };
 
   return (

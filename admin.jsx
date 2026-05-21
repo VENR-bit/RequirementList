@@ -5,17 +5,6 @@ const ICONS = window.ICONS;
 const fmtLKR = (n) => n.toLocaleString("en-LK", { maximumFractionDigits: 0 });
 const pad2 = (n) => String(n).padStart(2, "0");
 
-const STORE_KEY = "rk-items";
-function loadItems() {
-  try {
-    const s = localStorage.getItem(STORE_KEY);
-    if (s) return JSON.parse(s);
-  } catch (e) {}
-  return SEED_ITEMS;
-}
-function saveItems(list) {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch(e) {}
-}
 
 const PRIORITIES = [
   { id: "urgent", label: "Urgent" },
@@ -30,13 +19,18 @@ function emptyDraft() {
 }
 
 function AdminApp() {
-  const [items, setItems] = useState(loadItems);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState(emptyDraft());
   const fileRef = useRef(null);
 
-  // persist on every change
-  useEffect(() => { saveItems(items); }, [items]);
+  useEffect(() => {
+    window.sbFetchItems().then((rows) => {
+      setItems(rows.length ? rows : SEED_ITEMS);
+      setLoading(false);
+    });
+  }, []);
 
   function startEdit(item) {
     setEditingId(item.id);
@@ -46,21 +40,23 @@ function AdminApp() {
     setEditingId("new");
     setDraft(emptyDraft());
   }
-  function save() {
+  async function save() {
     if (!draft.en.trim()) return;
     if (editingId === "new") {
-      const nextId = items.length ? Math.max(...items.map(i => i.id)) + 1 : 1;
-      setItems([{ ...draft, id: nextId, pledged: 0, addedDays: 0 }, ...items]);
+      const created = await window.sbInsertItem(draft);
+      if (created) setItems([created, ...items]);
     } else {
-      setItems(items.map(i => i.id === editingId ? { ...i, ...draft } : i));
+      const updated = await window.sbUpdateItem(editingId, draft);
+      if (updated) setItems(items.map(i => i.id === editingId ? updated : i));
     }
     setEditingId(null);
     setDraft(emptyDraft());
   }
   function cancel() { setEditingId(null); setDraft(emptyDraft()); }
-  function remove(id) {
+  async function remove(id) {
     if (!confirm("Remove this requirement?")) return;
-    setItems(items.filter(i => i.id !== id));
+    const ok = await window.sbDeleteItem(id);
+    if (ok) setItems(items.filter(i => i.id !== id));
     if (editingId === id) cancel();
   }
   function onPhotoPick(e) {
@@ -85,9 +81,10 @@ function AdminApp() {
     reader.readAsDataURL(f);
   }
   function clearPhoto() { setDraft(d => ({ ...d, photo: "" })); }
-  function resetSeed() {
-    if (!confirm("Reset to the original sample list? Local edits will be lost.")) return;
-    setItems(SEED_ITEMS);
+  async function resetSeed() {
+    if (!confirm("Reload all items from the database?")) return;
+    const rows = await window.sbFetchItems();
+    if (rows.length) setItems(rows);
     cancel();
   }
 
