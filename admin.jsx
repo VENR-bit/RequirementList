@@ -18,7 +18,51 @@ function emptyDraft() {
   return { en: "", si: "", desc: "", price: 0, qty: 1, priority: "need", icon: "bowl", photo: "" };
 }
 
+const ADMIN_HASH = "92424";
+
+function PasscodeGate({ onUnlock }) {
+  const [code, setCode] = useState("");
+  const [error, setError] = useState(false);
+  const inputRef = useRef(null);
+  useEffect(() => { inputRef.current && inputRef.current.focus(); }, []);
+  const submit = (e) => {
+    e.preventDefault();
+    if (code === ADMIN_HASH) {
+      sessionStorage.setItem("rk-admin-auth", "1");
+      onUnlock();
+    } else {
+      setError(true);
+      setCode("");
+      inputRef.current && inputRef.current.focus();
+    }
+  };
+  return (
+    <div style={{minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"var(--paper)"}}>
+      <form onSubmit={submit} style={{textAlign:"center", maxWidth:340, padding:40}}>
+        <img src="images/rideekanda-logo.png" alt="" style={{width:72, marginBottom:24, opacity:0.85}} />
+        <div style={{fontFamily:"var(--serif)", fontSize:26, marginBottom:6}}>Administration</div>
+        <div className="si" style={{color:"var(--muted)", fontSize:13, marginBottom:28}}>පරිපාලන පුවරුව</div>
+        <label style={{display:"block", fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:"var(--muted)", marginBottom:8, textAlign:"left"}}>Enter passcode</label>
+        <input
+          ref={inputRef}
+          type="password"
+          inputMode="numeric"
+          maxLength={5}
+          value={code}
+          onChange={(e) => { setCode(e.target.value.replace(/\D/g, "")); setError(false); }}
+          placeholder="•••••"
+          autoComplete="off"
+          style={{width:"100%", textAlign:"center", fontSize:28, letterSpacing:"0.5em", padding:"12px 0", fontFamily:"var(--mono)", boxSizing:"border-box"}}
+        />
+        {error && <div style={{color:"var(--priority-urgent)", fontSize:13, marginTop:10}}>Incorrect passcode. Try again.</div>}
+        <button type="submit" className="btn-primary" style={{marginTop:20, width:"100%"}}>Unlock</button>
+      </form>
+    </div>
+  );
+}
+
 function AdminApp() {
+  const [authed, setAuthed] = useState(sessionStorage.getItem("rk-admin-auth") === "1");
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
@@ -26,11 +70,14 @@ function AdminApp() {
   const fileRef = useRef(null);
 
   useEffect(() => {
+    if (!authed) return;
     window.sbFetchItems().then((rows) => {
       setItems(rows.length ? rows : SEED_ITEMS);
       setLoading(false);
     });
-  }, []);
+  }, [authed]);
+
+  if (!authed) return <PasscodeGate onUnlock={() => setAuthed(true)} />;
 
   function startEdit(item) {
     setEditingId(item.id);
