@@ -77,6 +77,17 @@ function AdminApp() {
     });
   }, [authed]);
 
+  const stats = useMemo(() => {
+    let qty = 0, value = 0, pledgedValue = 0, urgent = 0;
+    for (const it of items) {
+      qty += it.qty;
+      value += it.qty * it.price;
+      pledgedValue += (it.pledged || 0) * it.price;
+      if (it.priority === "urgent") urgent += 1;
+    }
+    return { qty, value, pledgedValue, urgent, count: items.length };
+  }, [items]);
+
   if (!authed) return <PasscodeGate onUnlock={() => setAuthed(true)} />;
 
   function startEdit(item) {
@@ -109,7 +120,6 @@ function AdminApp() {
   function onPhotoPick(e) {
     const f = e.target.files && e.target.files[0];
     if (!f) return;
-    // Downscale and store as data URL to keep localStorage manageable
     const reader = new FileReader();
     reader.onload = () => {
       const img = new Image();
@@ -134,17 +144,6 @@ function AdminApp() {
     if (rows.length) setItems(rows);
     cancel();
   }
-
-  const stats = useMemo(() => {
-    let qty = 0, value = 0, pledgedValue = 0, urgent = 0;
-    for (const it of items) {
-      qty += it.qty;
-      value += it.qty * it.price;
-      pledgedValue += (it.pledged || 0) * it.price;
-      if (it.priority === "urgent") urgent += 1;
-    }
-    return { qty, value, pledgedValue, urgent, count: items.length };
-  }, [items]);
 
   return (
     <React.Fragment>
