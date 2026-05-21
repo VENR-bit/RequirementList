@@ -815,13 +815,13 @@ footer {
 .totals-table td.td-accent { color: var(--accent); }
 @media (max-width: 900px) {
   .footer-totals-inner { padding: 18px; }
-  .totals-table { display: block; border: 0; }
+  .totals-table { display: block; border: 0; width: 100%; }
   .totals-table thead { display: none; }
-  .totals-table tbody, .totals-table tr {
+  .totals-table tbody { display: block; width: 100%; }
+  .totals-table tr {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    border: 0;
-    gap: 0;
+    width: 100%;
   }
   .totals-table td {
     display: flex;
