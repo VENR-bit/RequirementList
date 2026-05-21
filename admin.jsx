@@ -68,6 +68,7 @@ function AdminApp() {
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState(emptyDraft());
   const fileRef = useRef(null);
+  const editCardRef = useRef(null);
 
   useEffect(() => {
     if (!authed) return;
@@ -93,10 +94,12 @@ function AdminApp() {
   function startEdit(item) {
     setEditingId(item.id);
     setDraft({ ...emptyDraft(), ...item });
+    setTimeout(() => editCardRef.current && editCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
   }
   function startNew() {
     setEditingId("new");
     setDraft(emptyDraft());
+    setTimeout(() => editCardRef.current && editCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
   }
   async function save() {
     if (!draft.en.trim()) return;
@@ -197,7 +200,7 @@ function AdminApp() {
 
         <div className="admin-grid">
           <aside>
-            <div className="admin-card">
+            <div className="admin-card" ref={editCardRef}>
               <div className="eyebrow">{editingId === "new" ? "New Requirement" : editingId ? "Edit Requirement" : "Add a Requirement"}</div>
               <h3>{editingId === "new" ? "Add to the list" : editingId ? (draft.en || "Editing…") : "Begin a new entry"}</h3>
               {!editingId && (

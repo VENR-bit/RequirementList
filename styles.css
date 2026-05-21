@@ -983,6 +983,50 @@ footer .footer-inner {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.admin-stats { display: flex; gap: 28px; margin-bottom: 26px; padding-bottom: 22px; border-bottom: 1px solid var(--rule); }
+.admin-stats { display: flex; gap: 28px; margin-bottom: 26px; padding-bottom: 22px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
 .admin-stats .stat-block .summary-label { margin-bottom: 4px; }
 .admin-stats .stat-block .summary-value { font-size: 26px; }
+
+/* ── ADMIN MOBILE ──────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .admin-shell { padding: 24px 16px 60px; }
+  .admin-header {
+    flex-wrap: wrap;
+    gap: 6px 14px;
+  }
+  .admin-header h2 { font-size: 28px; }
+  .admin-header .admin-sub { display: none; }
+  .admin-header .btn-ghost { margin-left: 0; font-size: 12px; }
+  .admin-stats { gap: 16px; }
+  .admin-stats .stat-block .summary-value { font-size: 20px; }
+  .admin-list-row {
+    grid-template-columns: 48px 1fr auto;
+    gap: 10px;
+  }
+  .admin-list-row .thumb { width: 48px; height: 48px; }
+  .admin-list-row .mini-num { font-size: 14px; }
+  .admin-list-row .mini-label { font-size: 8px; }
+  .admin-actions { gap: 4px; }
+  .icon-btn { width: 28px; height: 28px; }
+  .icon-btn svg { width: 12px; height: 12px; }
+}
+@media (max-width: 480px) {
+  .admin-list-row {
+    grid-template-columns: 48px 1fr;
+    grid-template-areas:
+      "thumb info"
+      "actions actions";
+    gap: 8px 10px;
+  }
+  .admin-list-row .thumb { grid-area: thumb; }
+  .admin-list-row > div:nth-child(2) { grid-area: info; }
+  .admin-list-row > div:nth-child(3),
+  .admin-list-row > div:nth-child(4) { display: none; }
+  .admin-list-row .admin-actions {
+    grid-area: actions;
+    justify-content: flex-start;
+    gap: 8px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--rule-soft);
+  }
+}
