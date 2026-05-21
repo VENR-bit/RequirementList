@@ -598,6 +598,7 @@ body::before {
   .items { padding: 8px 18px 60px; }
   .masthead-inner { padding: 14px 18px; gap: 12px; }
   .nav-link { display: none; }
+  .nav-link.nav-admin { display: inline; font-size: 12px; }
   .donate-cta { padding: 8px 14px; font-size: 12px; }
   .donate-cta svg { width: 12px; height: 12px; }
   .search-box { width: 100%; margin: 0; }
@@ -628,12 +629,10 @@ body::before {
   .masthead-inner { gap: 10px; }
   .brand-text .si { display: none; }
   .donate-cta {
-    /* Compact circular icon-only on tiny screens */
-    padding: 8px;
-    font-size: 0;
-    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 12px;
   }
-  .donate-cta svg { width: 16px; height: 16px; }
+  .donate-cta svg { display: none; }
 }
 
 
@@ -821,14 +820,15 @@ footer {
   .totals-table tbody, .totals-table tr {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    border: 1px solid var(--rule);
+    border: 0;
+    gap: 0;
   }
   .totals-table td {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 14px 14px;
-    font-size: 22px;
+    padding: 16px 14px;
+    font-size: 20px;
     border: 1px solid var(--rule);
     text-align: left;
   }

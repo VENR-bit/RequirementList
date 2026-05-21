@@ -32,9 +32,6 @@ function ItemRow({ item, idx, onPledge }) {
       <ItemThumb photo={item.photo} icon={item.icon} priority={item.priority} />
       <div className="item-meta">
         <div style={{display:"flex", alignItems:"baseline", gap:10}}>
-          <span style={{fontFamily:"var(--serif)", color:"var(--muted)", fontSize:13, fontFeatureSettings:'"tnum"'}}>
-            {pad2(idx + 1)}
-          </span>
           <h3 className="name">{item.en}</h3>
         </div>
         <div className="name-si">{item.si}</div>
@@ -344,7 +341,7 @@ function Masthead() {
         <nav className="masthead-nav">
           <a className="nav-link active" href="./index.html">Requirements</a>
           <a className="nav-link" href="https://rideekanda.org">Monastery</a>
-          <a className="nav-link" href="./admin.html">Admin</a>
+          <a className="nav-link nav-admin" href="./admin.html">Admin</a>
           <a className="donate-cta" href="https://venr-bit.github.io/RideekandaDonate/" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
