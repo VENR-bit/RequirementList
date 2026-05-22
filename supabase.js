@@ -55,13 +55,19 @@ async function sbFetchItems() {
 async function sbInsertItem(item) {
   const row = itemToDb(item);
   row.added_at = new Date().toISOString();
-  const { data, error } = await window.sbClient
+  const { error } = await window.sbClient
     .from("items")
-    .insert(row)
-    .select()
-    .single();
+    .insert(row);
   if (error) { console.error("sbInsertItem:", error); return null; }
-  return dbToItem(data);
+  // Fetch the newly inserted item (last by id)
+  const { data: fetched, error: fetchErr } = await window.sbClient
+    .from("items")
+    .select("*")
+    .order("id", { ascending: false })
+    .limit(1)
+    .single();
+  if (fetchErr) { console.error("sbInsertItem fetch:", fetchErr); return null; }
+  return dbToItem(fetched);
 }
 
 async function sbUpdateItem(id, updates) {
@@ -77,14 +83,19 @@ async function sbUpdateItem(id, updates) {
   if (updates.icon !== undefined) row.icon = updates.icon;
   if (updates.photo !== undefined) row.photo = updates.photo;
   row.updated_at = new Date().toISOString();
-  const { data, error } = await window.sbClient
+  const { error } = await window.sbClient
     .from("items")
     .update(row)
-    .eq("id", id)
-    .select()
-    .single();
+    .eq("id", id);
   if (error) { console.error("sbUpdateItem:", error); return null; }
-  return dbToItem(data);
+  // Fetch the updated item separately
+  const { data: fetched, error: fetchErr } = await window.sbClient
+    .from("items")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (fetchErr) { console.error("sbUpdateItem fetch:", fetchErr); return null; }
+  return dbToItem(fetched);
 }
 
 async function sbDeleteItem(id) {
