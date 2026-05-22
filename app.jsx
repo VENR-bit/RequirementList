@@ -38,9 +38,6 @@ function ItemTile({ item, onPledge }) {
         {item.desc && <div className="tile-desc">{item.desc}</div>}
         <div className="tile-tags">
           <PriorityPill priority={item.priority} />
-          <span className="added-tag">
-            · {item.addedDays === 0 ? "today" : item.addedDays === 1 ? "yesterday" : `${item.addedDays}d ago`}
-          </span>
         </div>
         <div className="tile-numbers">
           <div className="tile-stat">

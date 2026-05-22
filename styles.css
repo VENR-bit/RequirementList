@@ -411,8 +411,8 @@ body::before {
 }
 .tile-name {
   font-family: var(--serif);
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 600;
   line-height: 1.2;
   color: var(--ink);
   margin: 0;
@@ -460,9 +460,10 @@ body::before {
   color: var(--muted);
 }
 .tile-stat-value {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-feature-settings: "tnum";
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--ink);
   line-height: 1;
 }
