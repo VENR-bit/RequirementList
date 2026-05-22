@@ -23,53 +23,49 @@ function PriorityPill({ priority }) {
   return <span className="priority-pill priority-routine">Routine</span>;
 }
 
-function ItemRow({ item, idx, onPledge }) {
+function ItemTile({ item, onPledge }) {
   const complete = item.pledged >= item.qty;
   const pct = Math.min(100, (item.pledged / item.qty) * 100);
   const total = item.qty * item.price;
   return (
-    <div className="item-row">
-      <ItemThumb photo={item.photo} icon={item.icon} priority={item.priority} />
-      <div className="item-meta">
-        <div style={{display:"flex", alignItems:"baseline", gap:10}}>
-          <h3 className="name">{item.en}</h3>
-        </div>
-        <div className="name-si">{item.si}</div>
-        {item.desc && <div className="desc">{item.desc}</div>}
-        <div className="tag-row">
+    <div className="item-tile">
+      <div className="tile-thumb">
+        {item.photo ? <img src={item.photo} alt="" /> : (ICONS[item.icon] || ICONS.bowl)}
+      </div>
+      <div className="tile-body">
+        <h3 className="tile-name">{item.en}</h3>
+        <div className="tile-name-si si">{item.si}</div>
+        {item.desc && <div className="tile-desc">{item.desc}</div>}
+        <div className="tile-tags">
           <PriorityPill priority={item.priority} />
           <span className="added-tag">
-            · added {item.addedDays === 0 ? "today" : item.addedDays === 1 ? "yesterday" : `${item.addedDays} days ago`}
-          </span>
-          <span style={{flex:1, minWidth:0}}>
-            <span style={{display:"inline-flex", alignItems:"center", gap:8, marginLeft:10, fontSize:11, color:"var(--muted)", letterSpacing:"0.06em"}}>
-              <span>{item.pledged}/{item.qty} pledged</span>
-              <span style={{display:"inline-block", width:80, height:3, background:"var(--rule-soft)", borderRadius:2, position:"relative", overflow:"hidden"}}>
-                <span style={{position:"absolute", inset:0, width:`${pct}%`, background: complete ? "var(--priority-routine)" : "var(--accent)"}} />
-              </span>
-            </span>
+            · {item.addedDays === 0 ? "today" : item.addedDays === 1 ? "yesterday" : `${item.addedDays}d ago`}
           </span>
         </div>
-      </div>
-      <div className="qty">
-        <div className="qty-num">{item.qty}</div>
-        <div className="qty-label">Qty</div>
-      </div>
-      <div className="per-cost">
-        <div className="num"><span className="lkr">LKR</span> {fmtLKR(item.price)}</div>
-        <div className="label">Per item</div>
-      </div>
-      <div className="total-cost">
-        <div className="num"><span className="lkr">LKR</span> {fmtLKR(total)}</div>
-        <div className="label">Total</div>
-      </div>
-      <div className="price-stack">
-        <div className="mobile-numbers">
-          <span className="row-num">Qty <strong>{item.qty}</strong> · <span className="lkr">LKR</span> <strong>{fmtLKR(item.price)}</strong> ea.</span>
-          <span className="row-num"><strong style={{color:"var(--accent-deep)"}}>LKR {fmtLKR(total)}</strong> total</span>
+        <div className="tile-numbers">
+          <div className="tile-stat">
+            <span className="tile-stat-label">Qty</span>
+            <span className="tile-stat-value">{item.qty}</span>
+          </div>
+          <div className="tile-stat">
+            <span className="tile-stat-label">Per item</span>
+            <span className="tile-stat-value"><span className="lkr">LKR</span> {fmtLKR(item.price)}</span>
+          </div>
+          <div className="tile-stat tile-stat-total">
+            <span className="tile-stat-label">Total</span>
+            <span className="tile-stat-value"><span className="lkr">LKR</span> {fmtLKR(total)}</span>
+          </div>
+        </div>
+        <div className="tile-progress">
+          <div className="tile-progress-info">
+            <span>{item.pledged}/{item.qty} pledged</span>
+          </div>
+          <div className="progress-bar">
+            <span className="progress-bar-fill" style={{width:`${pct}%`, background: complete ? "var(--priority-routine)" : "var(--accent)"}} />
+          </div>
         </div>
         <button
-          className={`pledge-btn ${complete ? "complete" : ""}`}
+          className={`pledge-btn tile-pledge ${complete ? "complete" : ""}`}
           onClick={() => onPledge(item)}
           disabled={complete}
         >
@@ -270,18 +266,12 @@ function App() {
       </div>
 
       <main className="items">
-        <div className="list-header">
-          <div className="list-header-col list-header-col-name">Item</div>
-          <div className="list-header-col list-header-col-qty">Qty</div>
-          <div className="list-header-col list-header-col-per">Per item</div>
-          <div className="list-header-col list-header-col-total">Total</div>
-          <div className="list-header-col list-header-col-action"></div>
-        </div>
-
         {filtered.length === 0 && (
           <div className="empty">No items match. Try clearing the search.</div>
         )}
-        {filtered.map((it, i) => <ItemRow key={it.id} item={it} idx={i} onPledge={setPledgeFor} />)}
+        <div className="items-grid">
+          {filtered.map((it) => <ItemTile key={it.id} item={it} onPledge={setPledgeFor} />)}
+        </div>
       </main>
 
       <footer>
