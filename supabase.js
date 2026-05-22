@@ -78,7 +78,7 @@ async function sbUpdateItem(id, updates) {
   if (updates.price !== undefined) row.price = updates.price;
   if (updates.qty !== undefined) row.qty = updates.qty;
   if (updates.pledged !== undefined) row.pledged = updates.pledged;
-  if (updates.category !== undefined) row.category = updates.category;
+  if (updates.category !== undefined) row.category = updates.category || null;
   if (updates.priority !== undefined) row.priority = updates.priority;
   if (updates.icon !== undefined) row.icon = updates.icon;
   if (updates.photo !== undefined) row.photo = updates.photo;
