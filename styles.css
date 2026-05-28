@@ -172,6 +172,14 @@ body::before {
   color: var(--muted);
   margin-bottom: 18px;
 }
+.home-link {
+  color: var(--accent);
+  text-decoration: none;
+  margin-right: 10px;
+  letter-spacing: 0.12em;
+  transition: color 0.15s;
+}
+.home-link:hover { color: var(--accent-deep); }
 .hero h1 {
   font-family: var(--serif);
   font-weight: 400;
