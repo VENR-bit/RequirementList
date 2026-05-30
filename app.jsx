@@ -206,7 +206,7 @@ function App() {
   }, [items]);
 
   const filtered = useMemo(() => {
-    let out = items.slice();
+    let out = items.filter(it => it.pledged < it.qty);
     if (search.trim()) {
       const q = search.toLowerCase();
       out = out.filter(it => it.en.toLowerCase().includes(q) || (it.si || "").includes(search) || (it.desc || "").toLowerCase().includes(q));
